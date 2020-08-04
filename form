@@ -1,0 +1,328 @@
+     //form started
+     <div class='row'>
+        <div class='col-sm-3'></div>
+        <div class='col-sm-6'>
+          <div class='card'>
+            <div class='card-body'>
+              <Link to='/' className='btn-flat waves-effect'>
+                <button type='button' class='btn btn-primary'>
+                  GO BAck
+                </button>
+              </Link>
+              <hr />
+              <form onSubmit={this.onSubmit}>
+                <div class='form-group'>
+                  <label for='exampleInputEmail1'>Name</label>
+                  <input
+                    class='form-control'
+                    id='exampleInputEmail1'
+                    aria-describedby='emailHelp'
+                    onChange={this.onChange}
+                    value={this.state.name}
+                    error={errors.name}
+                    id='name'
+                    type='text'
+                    palceholder='name'
+                  />
+                </div>
+                <div class='form-group'>
+                  <label for='exampleInputEmail1'>Email</label>
+                  <input
+                    class='form-control'
+                    id='exampleInputEmail1'
+                    aria-describedby='emailHelp'
+                    onChange={this.onChange}
+                    value={this.state.email}
+                    error={errors.email}
+                    id='email'
+                    type='email'
+                  />
+                </div>
+
+                <div class='form-group'>
+                  <label for='exampleInputEmail1'>Password</label>
+                  <input
+                    class='form-control'
+                    id='exampleInputEmail1'
+                    aria-describedby='emailHelp'
+                    onChange={this.onChange}
+                    value={this.state.password}
+                    error={errors.password}
+                    id='password'
+                    type='password'
+                  />
+                </div>
+                <div class='form-group'>
+                  <label for='exampleInputEmail1'>conform password</label>
+                  <input
+                    class='form-control'
+                    id='exampleInputEmail1'
+                    aria-describedby='emailHelp'
+                    onChange={this.onChange}
+                    value={this.state.password2}
+                    error={errors.password2}
+                    id='password2'
+                    type='password'
+                  />
+                </div>
+                <div class='form-group'>
+                  <label for='exampleFormControlSelect1'>selecttype</label>
+                  <select
+                    class='form-control'
+                    id='exampleFormControlSelect1'
+                    value={this.state.role}
+                    onChange={(e) => {
+                      this.setState({
+                        role: e.target.value,
+                      });
+                    }}
+                  >
+                    <option value='freelancer'>Freelancer</option>
+                    <option value='client'>Client</option>
+                  </select>
+                </div>
+                <button type='submit' class='btn btn-primary'>
+                  Submit
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+        <div class='col-sm-3'></div>
+      </div>
+      
+      //form end
+      
+      // Condition Rendering STrated
+      
+      
+      import React, {Component} from 'react';
+import PropTypes from 'prop-types';
+import {connect} from 'react-redux';
+import {logoutUser} from '../../actions/authActions';
+import Footer from './Footer';
+import {use} from 'passport';
+import Feed from './Feed';
+import axios from 'axios';
+
+class Dashboard extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      data: [],
+      showMenu: false,
+      users: [],
+    };
+  }
+
+  showMenu = (event) => {
+    event.preventDefault();
+
+    this.setState({showMenu: true}, () => {
+      document.addEventListener('click', this.closeMenu);
+    });
+  };
+
+  closeMenu = () => {
+    this.setState({showMenu: false}, () => {
+      document.removeEventListener('click', this.closeMenu);
+    });
+  };
+  onLogoutClick = (e) => {
+    e.preventDefault();
+    this.props.logoutUser();
+  };
+
+  componentDidMount = async () => {
+    console.log('sadas');
+    const main = await axios.get('/api/jobs/getjobs');
+    const user = await axios.get('/api/users/getalluser');
+    console.log(user.data.data);
+    const Users = await user.data.data;
+
+    const Datas = await main.data.data;
+
+    this.setState({data: Datas});
+    this.setState({users: Users});
+    console.log(this.state.data);
+  };
+
+  render() {
+    const {user} = this.props.auth;
+
+    if (user.role === 'client') {
+      return (
+        <nav>
+          <div class='navbar-fixed' style={{backgroundColor: '#2979FF'}}>
+            <a href='#' class='brand-logo' style={{margin: '10px 10px'}}>
+              <h6
+                style={{
+                  fontFamily: 'monospace',
+                  letterSpacing: '2px',
+                  userSelect: 'none',
+                }}
+              >
+                vorkInsta
+              </h6>
+            </a>
+            <ul class=' right hide-on-med-and-down'>
+              <li style={{marginRight: '5px'}}>
+                <a>
+                  <i class='Large material-icons'>home</i>{' '}
+                </a>
+              </li>
+
+              <li style={{marginRight: '5px'}}>
+                <a>
+                  <i class='Large material-icons'>group</i>{' '}
+                </a>
+              </li>
+
+              <li style={{marginRight: '5px'}}>
+                <a>
+                  <i class='Large material-icons'>work</i>{' '}
+                </a>
+              </li>
+              <li style={{marginRight: '5px'}}>
+                <a>
+                  <i class='Large material-icons'>chat</i>{' '}
+                </a>
+              </li>
+              <li style={{marginRight: '200px'}}>
+                <a>
+                  <i class='Large material-icons'>notifications</i>{' '}
+                </a>
+              </li>
+
+              <li style={{marginRight: '0px'}}>
+                <a href='#' onClick={this.onLogoutClick}>
+                  <i class='Large material-icons'>exit_to_app</i>{' '}
+                </a>
+              </li>
+            </ul>
+          </div>
+          <hr />
+
+          <button type='button' class='btn btn-primary' onClick={this.showMenu}>
+            Primary
+          </button>
+          <hr />
+          <div class='card'>
+            {this.state.showMenu ? (
+              <form>
+                <div class='form-group'>
+                  <label for='exampleInputEmail1'>Email address</label>
+                  <input
+                    type='email'
+                    class='form-control'
+                    id='exampleInputEmail1'
+                    aria-describedby='emailHelp'
+                  />
+                  <small id='emailHelp' class='form-text text-muted'>
+                    We'll never share your email with anyone else.
+                  </small>
+                </div>
+                <div class='form-group'>
+                  <label for='exampleInputPassword1'>Password</label>
+                  <input
+                    type='password'
+                    class='form-control'
+                    id='exampleInputPassword1'
+                  />
+                </div>
+                <div class='form-group form-check'>
+                  <input
+                    type='checkbox'
+                    class='form-check-input'
+                    id='exampleCheck1'
+                  />
+                  <label class='form-check-label' for='exampleCheck1'>
+                    Check me out
+                  </label>
+                </div>
+                <button type='submit' class='btn btn-primary'>
+                  Submit
+                </button>
+              </form>
+            ) : null}
+          </div>
+          <hr />
+          {this.state.users.map((el) => {
+            return <h5 style={{color: 'black'}}>{el.name}</h5>;
+          })}
+        </nav>
+      );
+    } else {
+      return (
+        <nav>
+          <div class='navbar-fixed' style={{backgroundColor: 'black'}}>
+            <a href='#' class='brand-logo' style={{margin: '10px 10px'}}>
+              <h6
+                style={{
+                  fontFamily: 'monospace',
+                  letterSpacing: '2px',
+                  userSelect: 'none',
+                }}
+              >
+                vorkInsta
+              </h6>
+            </a>
+            <ul class=' right hide-on-med-and-down'>
+              <li style={{marginRight: '5px'}}>
+                <a>
+                  <i class='Large material-icons'>home</i>{' '}
+                </a>
+              </li>
+
+              <li style={{marginRight: '5px'}}>
+                <a>
+                  <i class='Large material-icons'>group</i>{' '}
+                </a>
+              </li>
+
+              <li style={{marginRight: '5px'}}>
+                <a>
+                  <i class='Large material-icons'>work</i>{' '}
+                </a>
+              </li>
+              <li style={{marginRight: '5px'}}>
+                <a>
+                  <i class='Large material-icons'>chat</i>{' '}
+                </a>
+              </li>
+              <li style={{marginRight: '200px'}}>
+                <a>
+                  <i class='Large material-icons'>notifications</i>{' '}
+                </a>
+              </li>
+
+              <li style={{marginRight: '0px'}}>
+                <a href='#' onClick={this.onLogoutClick}>
+                  <i class='Large material-icons'>exit_to_app</i>{' '}
+                </a>
+              </li>
+            </ul>
+            <hr />
+            <div class='card'>
+              {this.state.data.map((el) => {
+                return <button class='btn btn-primary'>{el.jobtitle}</button>;
+              })}
+            </div>
+          </div>
+        </nav>
+      );
+    }
+  }
+}
+
+Dashboard.propTypes = {
+  logoutUser: PropTypes.func.isRequired,
+  auth: PropTypes.object.isRequired,
+};
+
+const mapStateToProps = (state) => ({
+  auth: state.auth,
+});
+
+export default connect(mapStateToProps, {logoutUser})(Dashboard);
